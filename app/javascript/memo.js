@@ -1,3 +1,17 @@
+const buildHTML = (XHR) => {
+  const item = XHR.response.post;
+  const html = `
+    <div class="post">
+      <div class="post-date">
+        投稿日時:${item.created_at}
+      </div>
+      <div class="post-content">
+        ${item.content}
+      </div>
+    </div>`;
+  return html;
+};
+
 function post (){
   //リクエストを送信する処理
   const submit = document.getElementById("submit");
@@ -6,10 +20,20 @@ function post (){
     const form = document.getElementById("form");
     const formData = new FormData(form);
     const XHR = new XMLHttpRequest();
+    // XHR = XMLHttpRequestの略
     XHR.open("POST", "/posts", true);
     XHR.responseType = "json";
     XHR.send(formData);
-    // XHR = XMLHttpRequestの略
+    XHR.onload = () => {
+      if (XHR.status != 200){
+        alert(`Error ${XHR.status}: ${XHR.statusText}`);
+        return null;
+      };
+      const list = document.getElementById("list");
+      const formText = document.getElementById("content");
+      list.insertAdjacentHTML("afterend", buildHTML(XHR));
+      formText.value = "";
+    };
   });
 };
 
